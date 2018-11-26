@@ -3,31 +3,32 @@ package com.sdww8591.servletproxy.entity;
 import org.springframework.http.HttpMethod;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Request {
 
-    String uri;
+    String url;
 
-    HttpMethod httpMethod;
+    String httpMethod;
 
-    Map<String, String> header;
+    Map<String, String> header = new HashMap<>();
 
     InputStream body;
 
-    public String getUri() {
-        return uri;
+    public String getUrl() {
+        return url;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
-    public HttpMethod getHttpMethod() {
+    public String getHttpMethod() {
         return httpMethod;
     }
 
-    public void setHttpMethod(HttpMethod httpMethod) {
+    public void setHttpMethod(String httpMethod) {
         this.httpMethod = httpMethod;
     }
 
