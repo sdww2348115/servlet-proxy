@@ -1,7 +1,6 @@
 package com.sdww8591.servletproxy.exception;
 
 import com.sdww8591.servletproxy.entity.Response;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 
 import java.io.ByteArrayInputStream;
 
@@ -9,7 +8,6 @@ import java.io.ByteArrayInputStream;
  * 默认ExceptionHandler
  * 将构造一个status为500， body为：servlet proxy error的HTTP response进行返回
  */
-@ConditionalOnMissingBean(ExceptionHandler.class)
 public class DefaultExceptionHandler implements ExceptionHandler {
 
     private static final int DEFAULT_STATUS = 500;

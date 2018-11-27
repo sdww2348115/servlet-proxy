@@ -1,22 +1,18 @@
 package com.sdww8591.servletproxy.delivery;
 
-import com.sdww8591.servletproxy.delivery.HttpClient;
 import com.sdww8591.servletproxy.entity.Request;
 import com.sdww8591.servletproxy.entity.Response;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 
 import java.io.IOException;
 import java.net.URI;
 
-@ConditionalOnMissingBean(HttpClient.class)
 public class ApacheHttpClient implements HttpClient {
 
     private final CloseableHttpClient client = HttpClients.createDefault();

@@ -1,7 +1,5 @@
 package com.sdww8591.servletproxy.entity;
 
-import org.springframework.http.HttpMethod;
-
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;

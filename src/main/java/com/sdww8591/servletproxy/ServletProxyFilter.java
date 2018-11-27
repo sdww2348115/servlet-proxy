@@ -1,5 +1,6 @@
 package com.sdww8591.servletproxy;
 
+import com.sdww8591.servletproxy.delivery.ApacheHttpClient;
 import com.sdww8591.servletproxy.delivery.HttpClient;
 import com.sdww8591.servletproxy.entity.Request;
 import com.sdww8591.servletproxy.entity.Response;
@@ -48,7 +49,7 @@ public class ServletProxyFilter extends HttpFilter {
         ServletProxyFilter filter = new ServletProxyFilter();
 
         if (client == null) {
-            throw new RuntimeException("can not find httpClient");
+            filter.client = new ApacheHttpClient();
         }
         filter.client = client;
         log.info("httpClient assembling completed! class:{}", client.getClass());
@@ -95,7 +96,7 @@ public class ServletProxyFilter extends HttpFilter {
 
         client = context.getBean(HttpClient.class);
         if (client == null) {
-            throw new RuntimeException("can not find httpClient");
+            client = new ApacheHttpClient();
         }
         log.info("httpClient assembling completed! class:{}", client.getClass());
 
