@@ -1,4 +1,4 @@
-package com.sdww8591.servletproxy;
+package com.sdww8591.servletproxy.exception;
 
 import com.sdww8591.servletproxy.entity.Response;
 

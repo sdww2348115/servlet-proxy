@@ -3,6 +3,8 @@ package com.sdww8591.servletproxy;
 import com.sdww8591.servletproxy.delivery.HttpClient;
 import com.sdww8591.servletproxy.entity.Request;
 import com.sdww8591.servletproxy.entity.Response;
+import com.sdww8591.servletproxy.exception.DefaultExceptionHandler;
+import com.sdww8591.servletproxy.exception.ExceptionHandler;
 import com.sdww8591.servletproxy.interceptor.RequestInterceptor;
 import com.sdww8591.servletproxy.interceptor.ResponseInterceptor;
 import org.apache.commons.io.IOUtils;
@@ -17,7 +19,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -201,26 +202,4 @@ public class ServletProxyFilter extends HttpFilter {
         IOUtils.copyLarge(response.getBody(), httpServletResponse.getOutputStream());
     }
 
-    /**
-     * 默认ExceptionHandler
-     * 将构造一个status为500， body为：servlet proxy error的HTTP response进行返回
-     */
-    private static class DefaultExceptionHandler implements ExceptionHandler {
-
-        int DEFAULT_STATUS = 500;
-
-        String CONTENT_TYPE = "Content-Type";
-
-        String DEFAULT_CONTENT_TYPE = "text/html;charset=utf-8";
-
-        byte[] DEFAULT_RESP_BODY = "servlet proxy process error".getBytes();
-
-        public Response handleException(Exception e) {
-            Response exceptionResp = new Response();
-            exceptionResp.setStatusCode(DEFAULT_STATUS);
-            exceptionResp.getHeader().put(CONTENT_TYPE, DEFAULT_CONTENT_TYPE);
-            exceptionResp.setBody(new ByteArrayInputStream(DEFAULT_RESP_BODY));
-            return exceptionResp;
-        }
-    }
 }

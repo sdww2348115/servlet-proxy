@@ -3,6 +3,8 @@ package com.sdww8591.servletproxy.delivery;
 import com.sdww8591.servletproxy.entity.Request;
 import com.sdww8591.servletproxy.entity.Response;
 
+import java.io.IOException;
+
 /**
  * 传输接口
  * 用于将request发送出去，并获取response回应
@@ -16,5 +18,5 @@ public interface HttpClient {
      * @param request 待发送的数据
      * @return 经过解析处理的http请求
      */
-    Response send(Request request);
+    Response send(Request request) throws IOException;
 }
