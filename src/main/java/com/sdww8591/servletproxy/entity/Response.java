@@ -2,13 +2,14 @@ package com.sdww8591.servletproxy.entity;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Response {
 
     private int statusCode;
 
-    private Map<String, String> header;
+    private Map<String, String> header = new HashMap<>();
 
     private InputStream body;
 

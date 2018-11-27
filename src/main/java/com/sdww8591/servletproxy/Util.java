@@ -1,8 +1,12 @@
 package com.sdww8591.servletproxy;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 public class Util {
 
@@ -16,5 +20,21 @@ public class Util {
             result.add(enumeration.nextElement());
         }
         return result;
+    }
+
+    public static boolean predicateHeader(Map.Entry<String, String> entry) {
+        if (entry.getKey().trim().equalsIgnoreCase("Content-Length")) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isInputStreamReadable(InputStream inputStream) {
+        try {
+            inputStream.available();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 }

@@ -50,9 +50,10 @@ public class ServletProxyFilter extends HttpFilter {
 
         if (client == null) {
             filter.client = new ApacheHttpClient();
+        } else {
+            filter.client = client;
         }
-        filter.client = client;
-        log.info("httpClient assembling completed! class:{}", client.getClass());
+        log.info("httpClient assembling completed! class:{}", filter.client.getClass());
 
         if (exceptionHandler == null) {
             filter.exceptionHandler = new DefaultExceptionHandler();
@@ -89,7 +90,7 @@ public class ServletProxyFilter extends HttpFilter {
      */
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
+        /*ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
         if (context == null) {
             throw new RuntimeException("can not find applicationContext");
         }
@@ -119,7 +120,7 @@ public class ServletProxyFilter extends HttpFilter {
         Collections.sort(responseInterceptors, Comparator.comparing(ResponseInterceptor::getPriority));
         responseInterceptorChain = Collections.unmodifiableList(responseInterceptors);
         log.info("response-interceptor chain assembling completed! ResponseInterceptors:{}",
-                responseInterceptorChain.stream().map(interceptor -> interceptor.getClass()));
+                responseInterceptorChain.stream().map(interceptor -> interceptor.getClass()));*/
     }
 
     /**
@@ -200,7 +201,9 @@ public class ServletProxyFilter extends HttpFilter {
         for (Map.Entry<String, String> header: response.getHeader().entrySet()) {
             httpServletResponse.setHeader(header.getKey(), header.getValue());
         }
-        IOUtils.copyLarge(response.getBody(), httpServletResponse.getOutputStream());
+        if (Util.isInputStreamReadable(response.getBody())) {
+            IOUtils.copyLarge(response.getBody(), httpServletResponse.getOutputStream());
+        }
     }
 
 }

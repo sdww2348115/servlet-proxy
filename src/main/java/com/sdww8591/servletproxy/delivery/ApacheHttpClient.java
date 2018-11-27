@@ -1,5 +1,6 @@
 package com.sdww8591.servletproxy.delivery;
 
+import com.sdww8591.servletproxy.Util;
 import com.sdww8591.servletproxy.entity.Request;
 import com.sdww8591.servletproxy.entity.Response;
 import org.apache.http.Header;
@@ -40,7 +41,9 @@ public class ApacheHttpClient implements HttpClient {
         GenericHttpMethod genericHttpMethod = new GenericHttpMethod();
         genericHttpMethod.setMethod(request.getHttpMethod());
         genericHttpMethod.setURI(URI.create(request.getUrl()));
-        request.getHeader().entrySet().forEach(entry -> {
+        request.getHeader().entrySet().stream().filter(entry -> {
+            return !"Content-Length".equalsIgnoreCase(entry.getKey());
+        }).forEach(entry -> {
             genericHttpMethod.addHeader(entry.getKey(), entry.getValue());
         });
         genericHttpMethod.setEntity(new InputStreamEntity(request.getBody()));
