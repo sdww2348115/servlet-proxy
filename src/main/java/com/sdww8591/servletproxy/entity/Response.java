@@ -1,5 +1,6 @@
 package com.sdww8591.servletproxy.entity;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ public class Response {
 
     private Map<String, String> header;
 
-    private OutputStream body;
+    private InputStream body;
 
     public int getStatusCode() {
         return statusCode;
@@ -27,11 +28,11 @@ public class Response {
         this.header = header;
     }
 
-    public OutputStream getBody() {
+    public InputStream getBody() {
         return body;
     }
 
-    public void setBody(OutputStream body) {
+    public void setBody(InputStream body) {
         this.body = body;
     }
 }
