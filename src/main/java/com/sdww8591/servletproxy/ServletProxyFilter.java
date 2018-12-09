@@ -11,22 +11,18 @@ import com.sdww8591.servletproxy.interceptor.ResponseInterceptor;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpFilter;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * ServletProxy工具引擎类
  */
-public class ServletProxyFilter extends HttpFilter {
+public class ServletProxyFilter implements Filter {
 
     private static final Logger log = LoggerFactory.getLogger(ServletProxyFilter.class);
 
@@ -37,6 +33,20 @@ public class ServletProxyFilter extends HttpFilter {
     private List<ResponseInterceptor> responseInterceptorChain;
 
     private ExceptionHandler exceptionHandler;
+
+    private final ResponseCallback responseCallback = new ResponseCallback() {
+
+        @Override
+        public void callback(Response response, HttpServletResponse servletResponse) throws IOException {
+            for (ResponseInterceptor interceptor: responseInterceptorChain) {
+                if (interceptor.accept(response) && interceptor.process(response)) {
+                    break;
+                }
+            }
+
+            writeResponse(servletResponse, response);
+        }
+    };
 
     /**
      * 非Spring环境请采用该方式进行构建
@@ -80,47 +90,18 @@ public class ServletProxyFilter extends HttpFilter {
         log.info("response-interceptor chain assembling completed! ResponseInterceptors:{}",
                 responseInterceptorChain.stream().map(interceptor -> interceptor.getClass()));
 
+        filter.client.registerResponseCallback(filter.responseCallback);
         return filter;
     }
 
-    /**
-     * Spring环境将默认采用该方法进行装配
-     * @param filterConfig
-     * @throws ServletException
-     */
+
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        /*ApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
-        if (context == null) {
-            throw new RuntimeException("can not find applicationContext");
-        }
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-        client = context.getBean(HttpClient.class);
-        if (client == null) {
-            client = new ApacheHttpClient();
-        }
-        log.info("httpClient assembling completed! class:{}", client.getClass());
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse resp = (HttpServletResponse) response;
 
-        exceptionHandler = context.getBean(ExceptionHandler.class);
-        if (exceptionHandler == null) {
-            exceptionHandler = new DefaultExceptionHandler();
-        }
-        log.info("exceptionHandler assembling completed! class:{}", exceptionHandler.getClass());
-
-        Collection<RequestInterceptor> requestInterceptorCollection = context.getBeansOfType(RequestInterceptor.class).values();
-        List<RequestInterceptor> requestInterceptors = new ArrayList<>(requestInterceptorCollection);
-        Collections.sort(requestInterceptors, Comparator.comparing(RequestInterceptor::getPriority));
-        requestInterceptorChain = Collections.unmodifiableList(requestInterceptors);
-        log.info("request-interceptor chain assembling completed! RequestInterceptors:{}",
-                requestInterceptorChain.stream().map(interceptor -> interceptor.getClass()));
-
-        log.info("assembling requestInterceptor chain...");
-        Collection<ResponseInterceptor> responseInterceptorCollection = context.getBeansOfType(ResponseInterceptor.class).values();
-        List<ResponseInterceptor> responseInterceptors = new ArrayList<>(responseInterceptorCollection);
-        Collections.sort(responseInterceptors, Comparator.comparing(ResponseInterceptor::getPriority));
-        responseInterceptorChain = Collections.unmodifiableList(responseInterceptors);
-        log.info("response-interceptor chain assembling completed! ResponseInterceptors:{}",
-                responseInterceptorChain.stream().map(interceptor -> interceptor.getClass()));*/
+       doFilter(req, resp, chain);
     }
 
     /**
@@ -140,10 +121,11 @@ public class ServletProxyFilter extends HttpFilter {
      * @throws IOException
      * @throws ServletException
      */
-    @Override
     public void doFilter(HttpServletRequest request, HttpServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
+
         try {
+
             Request req = toRequest(request);
             for (RequestInterceptor interceptor: requestInterceptorChain) {
                 if (interceptor.accept(req) && interceptor.process(req)) {
@@ -151,14 +133,7 @@ public class ServletProxyFilter extends HttpFilter {
                 }
             }
 
-            Response resp = client.send(req);
-            for (ResponseInterceptor interceptor: responseInterceptorChain) {
-                if (interceptor.accept(resp) && interceptor.process(resp)) {
-                    break;
-                }
-            }
-
-            writeResponse(response, resp);
+            client.execute(req, response);
         } catch (Exception e) {
             log.error("servlet proxy process error", e);
             writeResponse(response, exceptionHandler.handleException(e));

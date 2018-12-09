@@ -23,7 +23,11 @@ public class Util {
     }
 
     public static boolean predicateHeader(Map.Entry<String, String> entry) {
-        if (entry.getKey().trim().equalsIgnoreCase("Content-Length")) {
+        if (Constants.Header.CONTENT_LENGTH.equalsIgnoreCase(entry.getKey().trim())) {
+            return false;
+        }
+
+        if (Constants.Header.KEEP_ALIVE.equalsIgnoreCase(entry.getKey().trim())) {
             return false;
         }
         return true;

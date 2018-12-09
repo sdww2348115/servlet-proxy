@@ -11,6 +11,10 @@
 	<name>servlet-proxy</name>
 	<description>Demo project for Spring Boot</description>
 
+	<properties>
+		<tomcat.version>9.0.0.M1</tomcat.version>
+	</properties>
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -46,6 +50,12 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>1.3.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-juli</artifactId>
+			<version>${tomcat.version}</version>
 		</dependency>
 
 

@@ -1,8 +1,11 @@
 package com.sdww8591.servletproxy.delivery;
 
+import com.sdww8591.servletproxy.ResponseCallback;
 import com.sdww8591.servletproxy.entity.Request;
 import com.sdww8591.servletproxy.entity.Response;
 
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -18,5 +21,7 @@ public interface HttpClient {
      * @param request 待发送的数据
      * @return 经过解析处理的http请求
      */
-    Response send(Request request) throws IOException;
+    Response execute(Request request, HttpServletResponse servletResponse) throws IOException;
+
+    void registerResponseCallback(ResponseCallback responseCallback);
 }
